@@ -23,24 +23,39 @@ object RecFun extends RecFunInterface:
    */
   def balance(chars: List[Char]): Boolean = 
 
-    def find_bracket(x: List[Char], status:Boolean): Boolean = 
-      println(x.mkString)
-      if x.isEmpty then {if status then true else false}
-      else {
-      if status then {
-        if x.head.toString ==")" then false else {
-        if x.head.toString == "(" then find_bracket(x.tail.reverse, !status)
-        else find_bracket(x.tail,status)
-        }
-        }
-      else {
-        if x.head.toString == ")" then find_bracket(x.tail.reverse,!status)
-        else find_bracket(x.tail,status)
+    def remove_bracket(x: List[Char], reversed:Boolean, remove_type:Boolean): List[Char] =
+      println("*******")
+      println(x.mkString)  
+      if x.isEmpty then x
+      else{
+      if !reversed then {
+        if x.head.toString ==")" then x
+        else{
+        if x.head.toString == "(" then {
+          if remove_type then remove_bracket(x.tail.reverse, !reversed,remove_type)
+        else remove_bracket(x.tail,!reversed,remove_type)
       }
-    }
-    val status = true
-    find_bracket(chars,status)
-   
+        else remove_bracket(x.tail,reversed,remove_type)
+        }
+        }
+      else {
+        if x.head.toString == ")" then  {
+          if remove_type then x.tail.reverse else x.tail}
+        else remove_bracket(x.tail,reversed,remove_type)
+      }
+     }
+  
+    println("------")
+    println(chars.mkString)
+    if chars.isEmpty then true
+    else {
+          if chars.head.toString ==")" then false 
+          else 
+              {
+                val reversed = false
+                balance(remove_bracket(chars,reversed,true)) | balance(remove_bracket(chars,reversed,false)) 
+              }
+        }
 
 
   /**
