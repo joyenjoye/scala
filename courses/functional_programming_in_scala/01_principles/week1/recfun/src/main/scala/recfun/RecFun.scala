@@ -23,42 +23,40 @@ object RecFun extends RecFunInterface:
    */
   def balance(chars: List[Char]): Boolean = 
 
-    def remove_bracket(x: List[Char], reversed:Boolean, remove_type:Boolean): List[Char] =
-      println("*******")
-      println(x.mkString)  
-      if x.isEmpty then x
-      else{
-      if !reversed then {
-        if x.head.toString ==")" then x
-        else{
-        if x.head.toString == "(" then {
-          if remove_type then remove_bracket(x.tail.reverse, !reversed,remove_type)
-        else remove_bracket(x.tail,!reversed,remove_type)
-      }
-        else remove_bracket(x.tail,reversed,remove_type)
+    def check_bracket(x: List[Char], bracket:List[Char]): List[Char] =
+
+      if x.isEmpty then bracket
+
+      else if x.head.toString =="(" then check_bracket(x.tail, x.head::bracket)
+      
+      else if x.head.toString == ")" then {
+
+        if bracket.isEmpty then x.head::bracket
+
+        else check_bracket(x.tail, bracket.tail)
+      
         }
-        }
-      else {
-        if x.head.toString == ")" then  {
-          if remove_type then x.tail.reverse else x.tail}
-        else remove_bracket(x.tail,reversed,remove_type)
-      }
-     }
-  
-    println("------")
-    println(chars.mkString)
-    if chars.isEmpty then true
-    else {
-          if chars.head.toString ==")" then false 
-          else 
-              {
-                val reversed = false
-                balance(remove_bracket(chars,reversed,true)) | balance(remove_bracket(chars,reversed,false)) 
-              }
-        }
+          
+      else check_bracket(x.tail,bracket)
+        
+        
+      
+    if check_bracket(chars,"".toList).isEmpty then true
+    else false
 
 
   /**
    * Exercise 3
    */
-  def countChange(money: Int, coins: List[Int]): Int = ???
+  def countChange(money: Int, coins: List[Int]): Int = 
+    if money<=0 then 0
+    else {
+      if coins.isEmpty then 0
+      else {
+        if money>=coins.head then 1+countChange(money-coins.head, coins)
+        else countChange(money, coins.tail)
+      }
+
+    }
+    
+
