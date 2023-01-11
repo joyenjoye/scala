@@ -49,28 +49,16 @@ object RecFun extends RecFunInterface:
    * Exercise 3
    */
   def countChange(money: Int, coins: List[Int]): Int = 
-
-    def get_change(amt: Int, coins:List[Int],change:List[Int],count:Int): (List[Int],Int) = {   
-      if coins.isEmpty then (change,count)
-      else {
-        if amt-coins.head==0 then get_change(amt,coins.tail, change,count+1)
-        else if amt-coins.head<0 then get_change(amt,coins.tail, change,count)
-        else get_change(amt,coins.tail, amt-coins.head::change,count)
-      }}
-    
-    def count_change(change: List[Int], coins: List[Int]): Int = 
-       if change.length ==1 then countChange(change.head,coins)
-       else countChange(change.head,coins)+count_change(change.tail,coins)
-    
+    // println("---------")
+    // print(money)
+    // print(coins)
     if money <=0 then 0
     else {
       if coins.isEmpty then 0
       else {
-        val _change_ = get_change(money,coins,List(),0)
-        val count = _change_.tail.head
-        val change = _change_.head
-        if change.isEmpty then count
-        else count +count_change(change,coins)
+       if money<coins.head then countChange(money,coins.tail)
+       else if money ==coins.head then 1+countChange(money,coins.tail)
+       else countChange(money-coins.head,coins)+countChange(money-coins.tail.head,coins.tail)
       
     }}
   
