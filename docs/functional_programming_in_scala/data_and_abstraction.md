@@ -2,8 +2,6 @@
 
 ## Class Hierarchies
 
-The below section are notes from slides of coursera course [Principle of Functional Programming](https://d3c33hcgiwev3.cloudfront.net/zukfJeuAR_epHyXrgMf3Fw_e287337d7f18475da2e56c172ffe4de1_progfun1-3-1.pdf?Expires=1672790400&Signature=B9Yh2NFjLSDi3KxqAVazq8VV1meJwb4eJHdzGwWxrxbZYbpSuv6jEb8MD9O5yFljhk07j0L2pkm56gX5G7f~L3Nij~qFiUP4SplkUJgEl3TV-egAXcG4au3XEB5X7ekDPnd2rhQsml7FPLmYxc1d2cmSwW3mBKdq1dfvK~xZeeo_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A)
-
 
 ### Abstract Classes
 
