@@ -1,8 +1,22 @@
-package funsets
 
-/**
- * 2. Purely Functional Sets.
- */
+trait FunSetsInterface:
+  type FunSet = Int => Boolean
+
+  def contains(s: FunSet, elem: Int): Boolean
+  def singletonSet(elem: Int): FunSet
+  def union(s: FunSet, t: FunSet): FunSet
+  def intersect(s: FunSet, t: Int => Boolean): FunSet
+  def diff(s: FunSet, t: FunSet): FunSet
+  def filter(s: FunSet, p: Int => Boolean): FunSet
+  def forall(s: FunSet, p: Int => Boolean): Boolean
+  def exists(s: FunSet, p: Int => Boolean): Boolean
+  def map(s: FunSet, f: Int => Int): FunSet
+  def toString(s: FunSet): String
+
+
+// **
+//  * 2. Purely Functional Sets.
+//  */
 trait FunSets extends FunSetsInterface:
   /**
    * We represent a set by its characteristic function, i.e.
@@ -87,3 +101,36 @@ trait FunSets extends FunSetsInterface:
     println(toString(s))
 
 object FunSets extends FunSets
+  
+val x = FunSets.singletonSet(1)
+
+val y = FunSets.singletonSet(2)
+
+FunSets.contains(x,1)
+
+val z = FunSets.union(x,y)
+
+FunSets.contains(z,1)
+FunSets.contains(z,2)
+
+val o = FunSets.intersect(x,y)
+FunSets.contains(o,1)
+
+val q = FunSets.intersect(z,y)
+FunSets.contains(q,2)
+
+  
+val s1 = FunSets.singletonSet(1)
+val s2 = FunSets.union(s1,FunSets.singletonSet(3))
+val s3 = FunSets.union(s2,FunSets.singletonSet(4))
+val s4 = FunSets.union(s3,FunSets.singletonSet(5))
+val s5 =  FunSets.union(s4,FunSets.singletonSet(7))
+val s6 =  FunSets.union(s5,FunSets.singletonSet(1000))
+
+
+
+val s7 = FunSets.map(s6,(x: Int) => x-1)
+FunSets.contains(s7,0)
+FunSets.contains(s7,1)
+FunSets.contains(s7,2)
+
