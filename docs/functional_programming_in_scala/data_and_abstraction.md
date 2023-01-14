@@ -2,7 +2,6 @@
 
 ## Class Hierarchies
 
-
 ### Abstract Classes
 
 Consider the task of writing a class for sets of integers with the following operations.
@@ -16,6 +15,8 @@ def contains(x: Int): Boolean
 IntSet is an abstract class. Abstract classes can contain members which are missing an implementation (in our case, both incl and contains); these are called abstract members. Consequently, no direct instances of an abstract class can be created, for instance an `IntSet()` call would be illegal.
 
 ### Class Extensions
+
+Let’s consider implementing sets as binary trees. There are two types of possible trees: a tree for the empty set, and a tree consisting of an integer and two sub-trees. Here are their implementations:
 
 ```scala
 class Empty() extends IntSet:
@@ -34,9 +35,12 @@ class NonEmpty(elem: Int, left: IntSet, right: IntSet) extends IntSet:
 end NonEmpty
 ```
 
+`Empty` and `NonEmpty` both extend the class `IntSet`. This implies that the types Empty and NonEmpty conform to the type IntSet, i.e. an object of type `Empty` or `NonEmpty` can be used wherever an object of type `IntSet` is required.
+
+
 ### Base Classes and Subclasses
 
-In the above example,  `IntSet` is called the superclass of `Empty` and `NonEmpty`. `Empty` and `NonEmpty` are subclasses of IntSet. In Scala, any user-defined class extends another class. If no superclass is given, the standard class Object in the Java package `java.lang` is assumed. The direct or indirect superclasses of a class C are called base classes of C. So, the base classes of NonEmpty include IntSet and Object
+In the above example,  `IntSet` is called the superclass of `Empty` and `NonEmpty`. `Empty` and `NonEmpty` are subclasses of `IntSet`. In Scala, any user-defined class extends another class. If no superclass is given, the standard class `Object` in the Java package `java.lang` is assumed. The direct or indirect superclasses of a class C are called base classes of C. So, the base classes of `NonEmpty` include `IntSet` and `Object`.
 
 
 ### Implementation and Overriding
@@ -57,24 +61,21 @@ def bar = 3
 
 ### Object Definitions
 
-In the IntSet example, one could argue that there is really only a single
-empty IntSet.So it seems overkill to have the user create many instances of it.
-We can express this case better with an object definition:
+In the `IntSet` example, one could argue that there is really only a single
+empty `IntSet`. So it seems overkill to have the user create many instances of it.
+We can express this case better with an `object` definition:
 
 ```scala
 object Empty extends IntSet:
-def contains(x: Int): Boolean = false
-def incl(x: Int): IntSet = NonEmpty(x, Empty, Empty)
+  def contains(x: Int): Boolean = false
+  def incl(x: Int): IntSet = NonEmpty(x, Empty, Empty)
 end Empty
 ```
-This defines a singleton object named `Empty`. No other `Empty` instance can be (or needs to be) created.
-Singleton objects are values, so `Empty` evaluates to itself.
+This defines a singleton object named `Empty`. No other `Empty` instance can be (or needs to be) created. Singleton objects are values, so `Empty` evaluates to itself.
 
 ### Companion Objects
 
-An object and a class can have the same name. This is possible since Scala has two global namespaces: one for types and one for values. Classes live in the type namespace, whereas objects live in the term namespace.
-
-If a class and object with the same name are given in the same sourcefile, we call them companions. For example:
+An object and a class can have the same name. This is possible since Scala has two global namespaces: one for types and one for values. Classes live in the type namespace, whereas objects live in the term namespace. If a class and object with the same name are given in the same sourcefile, we call them companions. For example:
 
 ```scala
 class IntSet ...
@@ -82,23 +83,31 @@ object IntSet:
 def singleton(x: Int) = NonEmpty(x, Empty, Empty)
 ```
 
-This defines a method to build sets with one element, which can be called as IntSet. singleton(elem). A *companion object* of a class plays a role similar to static class definitions in Java (which are absent in Scala).
+This defines a method to build sets with one element, which can be called as `IntSet.singleton(elem)`. A **companion object** of a class plays a role similar to static class definitions in Java (which are absent in Scala).
 
 
-### Programs
+<!-- ### Dynamic Binding
 
-
-
-
-
-### Dynamic Binding
-
-Object-oriented languages (including Scala) implement dynamic method dispatch. This means that the code invoked by a method call depends on the runtime type of the object that contains the method.
+Object-oriented languages (including Scala) implement dynamic method dispatch. This means that the code invoked by a method call depends on the runtime type of the object that contains the method. -->
 
 
 ## How classes are organized
 
-### Package
+### Packages
+
+Classes and objects are organized in packages. To place a class or object inside a package, use a package clause at the top of your source file.
+
+```scala
+package progfun.examples
+object Hello
+...
+```
+
+This would place `Hello` in the package `progfun.examples`. You can then refer it by its fully qualified name, `progfun.examples.Hello`. For instance, to run the Hello program:
+
+```bash
+scala progfun.examples.Hello
+```
 
 ### Imports
 
@@ -113,8 +122,8 @@ The first two forms are called named imports. The last form is called a wildcard
 
 Some entities are automatically imported in any Scala program. These are:
 
-- All members of package scala
-- All members of package java.lang
+- All members of package `scala`
+- All members of package `java.lang`
 - All members of the singleton object `scala.Predef`.
   
 Here are the fully qualified names of some types and functions which you
@@ -133,13 +142,13 @@ You can start at www.scala-lang.org/api/current
 
 ### Traits
 
-In Java, as well as in Scala, a class can only have one superclass. But what if a class has several natural supertypes to which it conforms or from which it wants to inherit code? Here, you could use traits.A trait is declared like an abstract class, just with trait instead of abstract class.
+In Java, as well as in Scala, a class can only have one superclass. But what if a class has several natural supertypes to which it conforms or from which it wants to inherit code? Here, you could use traits. A trait is declared like an abstract class, just with `trait` instead of `abstract class`.
 
 ```scala
 trait Planar:
- def height: Int
- def width: Int
- def surface = height * width
+  def height: Int
+  def width: Int
+  def surface = height * width
 ```
 
 Classes, objects and traits can inherit from at most one class but arbitrary many traits. For example:
@@ -148,6 +157,8 @@ Classes, objects and traits can inherit from at most one class but arbitrary man
 class Square extends Shape, Planar, Movable ...
 ```
 Traits resemble interfaces in Java, but are more powerful because they can have parameters and can contain fields and concrete methods.
+
+<!-- ### Types -->
 
 ### Exceptions
 Scala’s exception handling is similar to Java’s. The expression
@@ -160,28 +171,32 @@ aborts evaluation with the exception Exc. The type of this expression is Nothing
 ## Polymorphism
 
 A fundamental data structure in many functional languages is the immutable linked list. It is constructed from two building blocks:
-`Nil` the empty list
-`Cons` a cell containing an element and the remainder of the list.
 
+- `Nil` the empty list
+- `Cons` a cell containing an element and the remainder of the list.
+- 
+Here’s an outline of a class hierarchy that represents lists of integers in
+this fashion:
 
 ```scala
 trait IntList ...
 class Cons(val head: Int, val tail: IntList) extends IntList ...
 class Nil() extends IntList ...
 ```
+### Value Parameters
 
-Note the abbreviation (val head: Int, val tail: IntList) in the definition of Cons. This defines at the same time parameters and fields of a class. It is equivalent to:
+Note the abbreviation (`val head: Int`, `val tail: IntList`) in the definition of `Cons`. This defines at the same time parameters and fields of a class. It is equivalent to:
 
 ```scala
 class Cons(_head: Int, _tail: IntList) extends IntList:
-val head = _head
-val tail = _tail
+  val head = _head
+  val tail = _tail
 ```
-where _head and _tail are otherwise unused names.
+where `_head` and `_tail` are otherwise unused names.
 
 ### Type Parameters
 
-It seems too narrow to define only lists with Int elements. We’d need another class hierarchy for Double lists, and so on, one for each possible element type. We can generalize the definition using a type parameter:
+It seems too narrow to define only lists with `Int` elements. We’d need another class hierarchy for `Double` lists, and so on, one for each possible element type. We can generalize the definition using a type parameter:
 
 ```scala
 trait List[T]
@@ -246,14 +261,13 @@ element of the list.
 def nth[T](xs: List[T], n: Int): Int = ???
 ```
 
-Elements are numbered from 0. If index is outside the range from 0 up the the length of the list minus one,
-a IndexOutOfBoundsException should be thrown.
+Elements are numbered from 0. If index is outside the range from 0 up the the length of the list minus one, a `IndexOutOfBoundsException` should be thrown.
 
 ## Objects 
 
 A pure object-oriented language is one in which every value is an object. If the language is based on classes, this means that the type of each value is a class. Is Scala a pure object-oriented language? At first glance, there seem to be some exceptions: primitive types, functions. But, let’s look closer.
 
-Conceptually, types such as Int or Boolean do not receive special treatment in Scala. They are like the other classes, defined in the package scala. For reasons of efficiency, the Scala compiler represents the values of type scala.Int by 32-bit integers, and the values of type scala.Boolean by Java’s Booleans, etc.
+Conceptually, types such as `Int` or `Boolean` do not receive special treatment in Scala. They are like the other classes, defined in the package scala. For reasons of efficiency, the Scala compiler represents the values of type scala.Int by 32-bit integers, and the values of type scala. Boolean by Java’s Booleans, etc.
 
 The Boolean type maps to the JVM’s primitive type boolean. But one could define it as a class from first principles:
 
@@ -270,9 +284,7 @@ abstract class Boolean extends AnyVal:
 end Boolean
 ```
 
-
-Here are constants true and false that go with Boolean in
-idealized.scala:
+Here are constants `true` and `false` that go with Boolean in `idealized.scala`:
 
 ```scala
 package idealized.scala
@@ -339,7 +351,7 @@ class Succ(n: Nat) extends Nat:
 
 One for the number zero, the other for strictly positive numbers.
 
-### Functions as Objects
+## Functions as Objects
 
 In fact function values are treated as objects in Scala. The function type A => B is just an abbreviation for the class
 scala.Function1[A, B], which is defined as follows.
