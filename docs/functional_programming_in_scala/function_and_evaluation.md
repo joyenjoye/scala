@@ -200,3 +200,78 @@ val y = square(x)
 ```
 
 The right-hand side of a `val` definition is evaluated at the point of the definition itself.Afterwards, the name refers to the value. For instance, `y` above refers to `4`, not `square(2)`.
+
+## Nesting, Blocks and Lexical Scope
+
+### Nested Functions
+```scala
+def sqrt(x: Double) = {
+  def sqrtIter(guess: Double, x: Double): Double =
+    if isGoodEnough(guess, x) then guess
+    else sqrtIter(improve(guess, x), x)
+  def improve(guess: Double, x: Double) =
+    (guess + x / guess) / 2
+  def isGoodEnough(guess: Double, x: Double) =
+    abs(square(guess) - x) < 0.001
+    sqrtIter(1.0, x)
+}
+```
+
+It’s good functional programming style to split up a task into many small functions. But the names of functions like sqrtIter, improve, and isGoodEnough matter only for the implementation of sqrt, not for its usage. Normally we would not like users to access these functions directly. We can achieve this and at the same time avoid “name-space pollution” by putting the auxiliary functions inside sqrt.
+
+### Blocks
+
+A block is delimited by braces { ... }.
+
+```scala
+{ val x = f(3)
+x * x
+}
+```
+
+- It contains a sequence of definitions or expressions.
+- The last element of a block is an expression that defines its value.
+- This return expression can be preceded by auxiliary definitions.
+- Blocks are themselves expressions; a block may appear everywhere an expression can.
+- In Scala 3, braces are optional (i.e. implied) around a correctly indented expression that appears after =, then, else, …
+
+### Lexical Scope
+
+Definitions of outer blocks are visible inside a block unless they are shadowed. Therefore, we can simplify sqrt by eliminating redundant occurrences of the x parameter, which means everywhere the same thing:
+
+```scala
+def sqrt(x: Double) =
+  def sqrtIter(guess: Double): Double =
+  if isGoodEnough(guess) then guess
+  else sqrtIter(improve(guess))
+def improve(guess: Double) =
+  (guess + x / guess) / 2
+def isGoodEnough(guess: Double) =
+  abs(square(guess) - x) < 0.001
+  sqrtIter(1.0)
+```
+### Semicolons
+
+If there are more than one statements on a line, they need to be separated by semicolons. Semicolons at the end of lines are usually left out.
+
+```scala
+val y = x + 1; y * y
+```
+
+## Tail Recursion
+
+If a function calls itself as its last action, the function’s stack frame can be reused. This is called tail recursion.Tail recursive functions are iterative processes. In general, if the last action of a function consists of calling a function (which may be the same), one stack frame would be sufficient for both functions. Such calls are called tail-calls.
+
+The following are two examples for tail recursion:
+
+```scala
+def gcd(a: Int, b: Int): Int =
+  if b == 0 then a else gcd(b, a % b)
+
+gcd(14, 21)
+
+def factorial(n: Int): Int =
+  if n == 0 then 1 else n * factorial(n - 1)
+  
+factorial(4)
+```
