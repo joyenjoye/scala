@@ -1,5 +1,30 @@
 # Data and Abstraction
 
+In this section, we'll cover traits, and we'll learn how to organize classes into hierarchies. We'll cover the hierarchy of standard Scala types, and see how to organize classes and traits into packages. Finally, we'll touch upon the different sorts of polymorphism in Scala.
+
+- [Class Hierarchies](#class-hierarchies)
+  - [Abstract Classes](#abstract-classes)
+  - [Class Extensions](#class-extensions)
+  - [Base Classes and Subclasses](#base-classes-and-subclasses)
+  - [Implementation and Overriding](#implementation-and-overriding)
+  - [Object Definitions](#object-definitions)
+  - [Companion Objects](#companion-objects)
+- [How classes are organized](#how-classes-are-organized)
+  - [Packages](#packages)
+  - [Imports](#imports)
+  - [Traits](#traits)
+  - [Exceptions](#exceptions)
+- [Polymorphism](#polymorphism)
+  - [Value Parameters](#value-parameters)
+  - [Type Parameters](#type-parameters)
+  - [Types and Evaluation](#types-and-evaluation)
+  - [Exercise](#exercise)
+- [Objects](#objects)
+  - [Exercise I](#exercise-i)
+  - [Exercise II](#exercise-ii)
+- [Functions as Objects](#functions-as-objects)
+
+
 ## Class Hierarchies
 
 ### Abstract Classes
