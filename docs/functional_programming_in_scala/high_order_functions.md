@@ -1,5 +1,26 @@
 # Higher Order Functions
 
+
+- [Higher-Order Functions](#higher-order-functions-1)
+  - [Anonymous Function](#anonymous-function)
+  - [Function returning Function](#function-returning-function)
+  - [Consecutive Stepwise Applications](#consecutive-stepwise-applications)
+  - [Multiple Parameter Lists](#multiple-parameter-lists)
+- [Example: Finding Fixed Points](#example-finding-fixed-points)
+- [Function and Data](#function-and-data)
+  - [Classes](#classes)
+  - [Method](#method)
+- [Data Abstraction](#data-abstraction)
+  - [Self Reference](#self-reference)
+  - [Preconditions](#preconditions)
+  - [Assertions](#assertions)
+  - [Constructors](#constructors)
+  - [End Markers](#end-markers)
+- [Evaluation and Operators](#evaluation-and-operators)
+  - [Extension Methods](#extension-methods)
+- [Operators](#operators)
+- [Precedence Rules](#precedence-rules)
+
 ## Higher-Order Functions
 
 Take the sum of the integers between a and b:

@@ -1,5 +1,22 @@
 # Function and Evaluation
 
+- [Imperative programming](#imperative-programming)
+- [Functional Programming](#functional-programming)
+- [Functions and Parameters](#functions-and-parameters)
+- [Evaluation](#evaluation)
+  - [Call-by-name v.s. call-by-value](#call-by-name-vs-call-by-value)
+  - [Scala’s evaluation strategy](#scalas-evaluation-strategy)
+- [Conditionals and Value Definitions](#conditionals-and-value-definitions)
+  - [Conditional Expressions](#conditional-expressions)
+  - [Value Definitions](#value-definitions)
+- [Nesting, Blocks and Lexical Scope](#nesting-blocks-and-lexical-scope)
+  - [Nested Functions](#nested-functions)
+  - [Blocks](#blocks)
+  - [Lexical Scope](#lexical-scope)
+  - [Semicolons](#semicolons)
+- [Tail Recursion](#tail-recursion)
+
+
 ## Imperative programming 
 
 Imperative programming is about
