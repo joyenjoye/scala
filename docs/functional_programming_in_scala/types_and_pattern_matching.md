@@ -1,6 +1,5 @@
 # Types and Pattern
 
-
 - [Decomposition](#decomposition)
   - [Exercise](#exercise)
   - [Type Tests and Type Casts](#type-tests-and-type-casts)
@@ -12,6 +11,12 @@
   - [Exercise](#exercise-1)
   - [Sorting Lists](#sorting-lists)
 - [Enumeration](#enumeration)
+  - [Enums for ADTs](#enums-for-adts)
+  - [Pattern Matching on ADTs](#pattern-matching-on-adts)
+  - [Simple Enums](#simple-enums)
+  - [Parameterized enums](#parameterized-enums)
+  - [Domain Modeling](#domain-modeling)
+
 
 ## Decomposition
 
@@ -241,4 +246,152 @@ of the input list N?
 - [x] proportional to N
 - [ ] proportional to N * log(N)
 - [ ] proportional to N * N
+
+
 ## Enumeration
+In the previous sessions, you have learned how to model data with class hierarchies. Classes are essentially bundles of functions operating on some common values represented as fields. They are a very useful abstraction, since they allow encapsulation of data. 
+
+But sometimes we just need to compose and decompose pure data without any associated functions. Case classes and pattern matching work well for this task.
+
+Here’s our case class hierarchy for expressions again:
+
+```scala
+trait Expr
+object Expr:
+  case class Var(s: String) extends Expr
+  case class Number(n: Int) extends Expr
+  case class Sum(e1: Expr, e2: Expr) extends Expr
+  case class Prod(e1: Expr, e2: Expr) extends Expr
+```
+This time we have put all case classes in the Expr companion object, in
+order not to pollute the global namespace. So it’s `Expr.Number(1)` instead of `Number(1)`, for example. One can still "pull out" all the cases using an import.
+
+```scala
+import Expr.*
+```
+
+Pure data definitions like these are called algebraic data types, or ADTs
+for short. They are very common in functional programming. To make them even more convenient, Scala offers some special syntax.
+
+### Enums for ADTs
+
+An `enum` enumerates all the cases of an ADT and nothing else.
+
+```scala
+enum Expr:
+  case Var(s: String)
+  case Number(n: Int)
+  case Sum(e1: Expr, e2: Expr)
+  case Prod(e1: Expr, e2: Expr)
+```
+
+This `enum` is equivalent to the case class hierarchy on the previous slide, but is shorter, since it avoids the repetitive `class ... extends Expr` notation.
+
+### Pattern Matching on ADTs
+
+Match expressions can be used on enums as usual. For instance, to print expressions with proper parameterization:
+
+```scala
+def show(e: Expr): String = e match
+  case Expr.Var(x) => x
+  case Expr.Number(n) => n.toString
+  case Expr.Sum(a, b) => s”${show(a)} + ${show(a)}}”
+  case Expr.Prod(a, b) => s”${showP(a)} * ${showP(a)}”
+def showP(e: Expr): String = e match
+  case e: Sum => s”(${show(expr)})”
+  case _ => show(expr)
+```
+
+### Simple Enums
+
+Cases of an enum can also be simple values, without any parameters.
+
+For example, define a Color type with values Red, Green, and Blue:
+
+```scala
+enum Color:
+  case Red
+  case Green
+  case Blue
+```
+We can also combine several simple cases in one list:
+
+```scala
+enum Color:
+case Red, Green, Blue
+```
+
+For pattern matching, simple cases count as constants:
+
+```scala
+enum DayOfWeek:
+  case Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+import DayOfWeek.*
+def isWeekend(day: DayOfWeek) = day match
+  case Saturday | Sunday => true
+  case _ => false
+```
+
+### Parameterized enums
+
+Enums can be parameterized.
+
+- Enumeration cases that pass parameters have to use an explicit
+`extends` clause. 
+- The expression `e.ordinal` gives the ordinal value of the enum case `e`. Cases start with zero and are numbered consecutively.
+- `values` is an immutable array in the companion object of an enum
+that contains all enum values.
+- Only simple cases have ordinal numbers and show up in values,
+parameterized cases do not.
+
+```scala
+enum Direction(val dx: Int, val dy: Int):
+  case Right extends Direction( 1, 0)
+  case Up extends Direction( 0, 1)
+  case Left extends Direction(-1, 0)
+  case Down extends Direction( 0, -1)
+  def leftTurn = Direction.values((ordinal + 1) % 4)
+end Direction
+
+val r = Direction.Down
+val u = r.leftTurn 
+val v = (u.dx, u.dy)
+val x = Direction.Right.ordinal
+val y = Direction.Up.ordinal
+val z = Direction.Left.ordinal
+```
+
+The Direction `enum` is expanded by the Scala compiler to roughly the
+following structure:
+
+```scala
+abstract class Direction(val dx: Int, val dy: Int):
+   def rightTurn = Direction.values((ordinal - 1) % 4)
+object Direction:
+  val Right = new Direction( 1, 0) {}
+  val Up = new Direction( 0, 1) {}
+  val Left = new Direction(-1, 0) {}
+  val Down = new Direction( 0, -1) {}
+end Direction
+```
+There are also compiler-defined helper methods `ordinal` in the class and
+`values` and `valueOf` in the companion object.
+
+### Domain Modeling
+
+ADTs and enums are particularly useful for domain modelling tasks where one needs to define a large number of data types without attaching operations. For example, modelling payment methods:
+
+```scala
+enum PaymentMethod:
+  case CreditCard(kind: Card, holder: String, number: Long, expires: Date)
+  case PayPal(email: String)
+  case Cash
+
+enum Card:
+  case Visa, Mastercard, Amex
+```
+
+In this section, two uses of enum definitions are covered:
+-  as a shorthand for hierarchies of case classes,
+-  as a way to define data types accepting alternative values,
+The two cases can be combined: an enum can comprise parameterized and simple cases at the same time. Enums are typically used for pure data, where all operations on such data are defined elsewhere.
