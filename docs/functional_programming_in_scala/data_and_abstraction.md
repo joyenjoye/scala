@@ -33,8 +33,8 @@ Consider the task of writing a class for sets of integers with the following ope
 
 ```scala
 abstract class IntSet:
-def incl(x: Int): IntSet
-def contains(x: Int): Boolean
+  def incl(x: Int): IntSet
+  def contains(x: Int): Boolean
 ```
 
 IntSet is an abstract class. Abstract classes can contain members which are missing an implementation (in our case, both incl and contains); these are called abstract members. Consequently, no direct instances of an abstract class can be created, for instance an `IntSet()` call would be illegal.
@@ -74,14 +74,14 @@ The definitions of contains and incl in the classes `Empty` and `NonEmpty` imple
 
 ```scala
 abstract class Base: 
-def foo = 1 
-def bar: Int 
+  def foo = 1 
+  def bar: Int 
 ```
 
 ```scala
 class Sub extends Base:
-override def foo = 2
-def bar = 3
+  override def foo = 2
+  def bar = 3
 ```
 
 ### Object Definitions
@@ -105,7 +105,7 @@ An object and a class can have the same name. This is possible since Scala has t
 ```scala
 class IntSet ...
 object IntSet:
-def singleton(x: Int) = NonEmpty(x, Empty, Empty)
+  def singleton(x: Int) = NonEmpty(x, Empty, Empty)
 ```
 
 This defines a method to build sets with one element, which can be called as `IntSet.singleton(elem)`. A **companion object** of a class plays a role similar to static class definitions in Java (which are absent in Scala).
@@ -199,7 +199,7 @@ A fundamental data structure in many functional languages is the immutable linke
 
 - `Nil` the empty list
 - `Cons` a cell containing an element and the remainder of the list.
-- 
+  
 Here’s an outline of a class hierarchy that represents lists of integers in
 this fashion:
 

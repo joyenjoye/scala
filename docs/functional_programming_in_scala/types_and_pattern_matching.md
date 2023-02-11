@@ -318,7 +318,7 @@ We can also combine several simple cases in one list:
 
 ```scala
 enum Color:
-case Red, Green, Blue
+  case Red, Green, Blue
 ```
 
 For pattern matching, simple cases count as constants:
@@ -394,4 +394,283 @@ enum Card:
 In this section, two uses of enum definitions are covered:
 -  as a shorthand for hierarchies of case classes,
 -  as a way to define data types accepting alternative values,
+
 The two cases can be combined: an enum can comprise parameterized and simple cases at the same time. Enums are typically used for pure data, where all operations on such data are defined elsewhere.
+
+## Subtyping and Generics
+
+Consider the method `assertAllPos` which
+- takes an `IntSet`
+- returns the `IntSet` itself if all its elements are positive
+- throws an `exception` otherwise
+  
+What would be the best type you can give to `assertAllPos`? Maybe:
+
+```scala
+def assertAllPos(s: IntSet): IntSet
+```
+
+In most situations this is fine, but can one be more precise?
+
+### Type Bounds
+
+One might want to express that assertAllPos takes `Empty` sets to `Empty` sets and `NonEmpty` sets to `NonEmpty` sets. A way to express this is:
+
+```scala
+def assertAllPos[S <: IntSet](r: S): S = ...
+```
+
+Here, `<: IntSet` is an upper bound of the type parameter `S`:
+
+It means that `S` can be instantiated only to types that conform to `IntSet`. Generally, the notation
+- `S <: T` means: `S` is a subtype of `T`, and
+- `S >: T` means: `S` is a supertype of `T`, or `T` is a subtype of `S`.
+
+
+You can also use a lower bound for a type variable.
+
+`[S >: NonEmpty]` introduces a type parameter S that can range only over supertypes of `NonEmpty`. So S could be one of `NonEmpty`, `IntSet`, `AnyRef`, or `Any`. We will see in the next session examples where lower bounds are useful.
+
+Finally, it is also possible to mix a lower bound with an upper bound. `[S >: NonEmpty <: IntSet]` would restrict S any type on the interval between NonEmpty and IntSet.
+
+### Covariance
+
+There’s another interaction between subtyping and type parameters we need to consider. Given `NonEmpty <: IntSet`, whether or not `List[NonEmpty] <: List[IntSet]`
+
+Intuitively, this makes sense: A list of non-empty sets is a special case of a list of arbitrary sets. We call types for which this relationship holds covariant because their subtyping relationship varies with the type parameter. Does covariance make sense for all types, not just for List?
+
+### Array Typing Problem
+
+For perspective, let’s look at arrays in Java (and C#).
+
+- An array of T elements is written T[] in Java.
+- In Scala we use parameterized type syntax Array[T] to refer to the same type.
+  
+Arrays in Java are covariant, so one would have:
+
+```java
+NonEmpty[] <: IntSet[]
+```
+
+But covariant array typing causes problems. To see why, consider the Java code below.
+
+```java
+NonEmpty [] a = new NonEmpty []{
+new NonEmpty (1 , new Empty () , new Empty ())};
+IntSet [] b = a ;
+b [0] = new Empty ();
+NonEmpty s = a [0];
+```
+
+It looks like we assigned in the last line an Empty set to a variable of type NonEmpty! What went wrong?
+
+
+### The Liskov Substitution Principle
+
+The following principle, stated by Barbara Liskov, tells us when a type can be a subtype of another. If `A <: B`, then everything one can to do with a value of type `B` one should also be able to do with a value of type `A`.
+
+[The actual definition Liskov used is a bit more formal. It says: Let `q(x)` be a property provable about objects `x` of type `B`. Then `q(y)` should be provable for objects `y` of type `A` where `A <: B`.
+
+### Exercise
+
+The problematic array example would be written as follows in Scala:
+
+```scala
+val a: Array[NonEmpty] = Array(NonEmpty(1, Empty(), Empty()))
+val b: Array[IntSet] = a
+b(0) = Empty()
+val s: NonEmpty = a(0)
+```
+When you try out this example, what do you observe?
+
+- [ ] A type error in line 1
+- [x] A type error in line 2
+- [ ] A type error in line 3
+- [ ] A type error in line 4
+- [ ] A program that compiles and throws an exception at run-time
+- [ ] A program that compiles and runs without exception
+
+
+##  Variance
+
+You have seen the the previous session that some types should be covariant whereas others should not. Roughly speaking, a type that accepts mutations of its elements should not be covariant. But immutable types can be covariant, if some conditions on methods are met.
+
+Say `C[T]` is a parameterized type and `A`, `B` are types such that `A <: B`. In general, there are three possible relationships between `C[A]` and `C[B]`:
+- `C[A] <: C[B]` `C` is covariant
+- `C[A] >: C[B]` `C` is contravariant
+- neither `C[A]` nor `C[B]` is a subtype of the other `C` is nonvariant
+
+Scala lets you declare the variance of a type by annotating the type parameter:
+- class `C[+A] { ... }` `C` is covariant
+- class `C[-A] { ... }` `C` is contravariant
+- class `C[A] { ... }` `C` is nonvariant
+
+### Exercise 
+
+Assume the following type hierarchy and two function types:
+
+```scala
+trait Fruit
+class Apple extends Fruit
+class Orange extends Fruit
+type FtoO = Fruit => Orange
+type AtoF = Apple => Fruit
+```
+According to the Liskov Substitution Principle, which of the following should be true?
+
+- [x] `FtoO <: AtoF`
+- [ ] `AtoF <: FtoO`
+- [ ] `A` and `B` are unrelated.
+ 
+
+Generally, we have the following rule for subtyping between function types: 
+
+If `A2 <: A1` and `B1 <: B2`, then `A1 => B1 <: A2 => B2`
+
+So functions are contravariant in their argument type(s) and covariant in their result type. This leads to the following revised definition of the Function1 trait: 
+
+```scala
+package scala
+trait Function1[-T, +U]:
+  def apply(x: T): U
+```
+
+### Variance Check
+
+We have seen in the array example that the combination of covariance with certain operations is unsound.
+In this case the problematic operation was the update operation on an array. If we turn Array into a class, and update into a method, it would look like this:
+
+```scala
+class Array[+T]:
+  def update(x: T) = ...
+```
+
+The problematic combination is
+-  the covariant type parameter T
+-  which appears in parameter position of the method update.
+
+
+The Scala compiler will check that there are no problematic combinations when compiling a class with variance annotations. Roughly,
+
+- covariant type parameters can only appear in method results.
+- contravariant type parameters can only appear in method parameters.
+- invariant type parameters can appear anywhere.
+
+The precise rules are a bit more involved, fortunately the Scala compiler performs them for us.
+
+Let’s have a look again at Function1:
+
+```scala
+trait Function1[-T, +U]:
+  def apply(x: T): U
+```
+
+Here,
+- T is contravariant and appears only as a method parameter type
+- U is covariant and appears only as a method result type
+  
+So the method is checks out OK.
+
+### Variance and List
+Let’s get back to the previous implementation of lists. One shortcoming was that `Nil` had to be a class, whereas we would prefer it to be an object (after all, there is only one empty list). Can we change that? Yes, because we can make List covariant. Here are the essential modifications:
+
+```scala
+trait List[+T]
+...
+object Empty extends List[Nothing]
+...
+```
+
+Here a definition of lists that implements all the cases we have seen so far:
+```scala
+trait List[+T]:
+  def isEmpty = this match
+    case Nil => true
+    case _ => false
+  override def toString =
+    def recur(prefix: String, xs: List[T]): String = xs match
+        case x :: xs1 => s"$prefix$x${recur(", ", xs1)}"
+        case Nil => ")"
+    recur("List(", this)
+
+case class ::[+T](head: T, tail: List[T]) extends List[T]
+case object Nil extends List[Nothing]
+extension [T](x: T) def :: (xs: List[T]): List[T] = ::(x, xs)
+object List:
+  def apply() = Nil
+  def apply[T](x: T) = x :: Nil
+  def apply[T](x1: T, x2: T) = x1 :: x2 :: Nil
+  ...
+```
+
+### Making Classes Covariant
+
+Sometimes, we have to put in a bit of work to make a class covariant. Consider adding a prepend method to List which prepends a given element, yielding a new list. A first implementation of prepend could look like this:
+
+```scala
+trait List[+T]:
+  def prepend(elem: T): List[T] = ::(elem, this)
+```
+But that does not work!
+
+
+The above code not type-check?  Why
+
+Possible answers:
+- [ ] prepend turns List into a mutable class.
+- [x] prepend fails variance checking.
+- [ ] prepend’s right-hand side contains a type error
+
+Indeed, the compiler is right to throw out List with prepend, because it violates the Liskov Substitution Principle: Here’s something one can do with a list xs of type List[Fruit]:
+
+```scala
+xs.prepend(Orange)
+```
+But the same operation on a list ys of type List[Apple] would lead to a type error:
+
+```scala
+ys.prepend(Orange)
+```
+So, `List[Apple]` cannot be a subtype of `List[Fruit]`.
+
+But prepend is a natural method to have on immutable lists! How can we make it variance-correct?
+We can use a lower bound:
+
+```scala
+def prepend [U >: T] (elem: U): List[U] = ::(elem, this)
+```
+
+This passes variance checks, because:
+- covariant type parameters may appear in lower bounds of method type parameters
+- contravariant type parameters may appear in upper bounds.
+
+
+### Exercise 
+
+Assume prepend in trait List is implemented like this:
+
+```scala
+def prepend [U >: T] (elem: U): List[U] = ::(elem, this)
+```
+
+What is the result type of this function:
+
+```scala
+def f(xs: List[Apple], x: Orange) = xs.prepend(x) ?
+```
+
+Possible answers:
+- [ ] does not type check
+- [ ] List[Apple]
+- [ ] List[Orange]
+- [x] List[Fruit]
+- [ ] List[Any]
+
+
+
+The need for a lower bound was essentially to decouple the new parameter of the class and the parameter of the newly created object. Using an extension method such as in `::` above, sidesteps the problem and is often simpler:
+
+```scala
+extension [T](x: T): 
+  def :: (xs: List[T]): List[T] = ::(x, xs)
+```
