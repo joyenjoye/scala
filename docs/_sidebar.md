@@ -7,3 +7,4 @@
         * [Data and Abstraction](functional_programming_in_scala/data_and_abstraction.md)
         * [Types and Pattern Matching](functional_programming_in_scala/types_and_pattern_matching.md)
         * [List](functional_programming_in_scala/list.md)
+        * [Collections](functional_programming_in_scala/collections.md)
