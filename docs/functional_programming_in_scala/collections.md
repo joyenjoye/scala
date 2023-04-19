@@ -99,7 +99,7 @@ def scalarProduct(xs: Vector[Double], ys: Vector[Double]): Double =
   xs.zip(ys).map(_ * _).sum
 ```
 
-### Exercise
+### Exercise I
 
 A number n is prime if the only divisors of n are 1 and n itself. What is a high-level way to write a test for primality of numbers? For once, value conciseness over efficiency.
 
@@ -286,5 +286,175 @@ We can solve this problem with a recursive algorithm:
 ```
 
 ### Maps
+
+Another fundamental collection type is the map. A map of type Map[Key, Value] is a data structure that associates keys of type Key with values of type Value. 
+
+```scala
+val romanNumerals = Map("I" -> 1, "V" -> 5, "X" -> 10)
+val capitalOfCountry = Map("US" -> "Washington", "Switzerland" -> "Bern")
+```
+
+Class `Map[Key, Value]` extends the collection type `Iterable[(Key, Value)]`. Therefore, maps support the same collection operations as other iterables do. 
+
+```scala
+val countryOfCapital = capitalOfCountry.map((x, y) => (y, x)) // Map("Washington" -> "US", "Bern" -> "Switzerland")
+```
+Note that maps extend iterables of key/value pairs. In fact, the syntax `key -> value` is just an alternative way to write the pair `(key, value)`. `->` implemented as an extension method in `Predef`.
+
+Class `Map[Key, Value]` also extends the function type Key => Value, so maps can be used everywhere functions can. In particular, maps can be applied to key arguments: 
+
+```scala
+capitalOfCountry("US") // "Washington"
+```
+Applying a map to a non-existing key gives an error:
+```scala
+capitalOfCountry("Andorra") // java.util.NoSuchElementException: key not found: Andorra
+```
+
+#### Querying Map
+
+To query a map without knowing beforehand whether it contains a given key, you can use the get operation:
+
+```scala
+capitalOfCountry.get("US") // Some("Washington")
+capitalOfCountry.get("Andorra") // None
+```
+The result of a get operation is an `Option` value.
+
+The `Option` type is defined as:
+
+```scala
+trait Option[+A]
+
+case class Some[+A](value: A) extends Option[A]
+object None extends Option[Nothing]
+```
+
+The expression `map.get(key)` returns
+
+- `None` if map does not contain the given `key`,
+- `Some(x)` if map associates the given key with the value `x`.
+
+Since options are defined as case classes, they can be decomposed using pattern matching:
+
+```scala
+def showCapital(country: String) = capitalOfCountry.get(country) match
+case Some(capital) => capital
+case None => "missing data"
+showCapital("US") // "Washington"
+showCapital("Andorra") // "missing data"
+```
+
+Options also support quite a few operations of the other collections
+
+#### Updating Maps
+
+Functional updates of a `map` are done with the `+` and `++` operations: 
+
+- `m + (k -> v)` The map that takes key `k` to value `v` and is otherwise equal to `m`
+- `m ++ kvs` The map `m` updated via `+` with all key/value pairs in `kvs`
+- 
+These operations are purely functional. For instance,
+
+```scala
+val m1 = Map("red" -> 1, "blue" -> 2)  //  Map(red -> 1, blue -> 2)
+val m2 = m1 + ("blue" -> 3) // Map(red -> 1, blue -> 3)
+```
+
+#### Sorted and GroupBy
+
+Two useful operations known from SQL queries are groupBy and orderBy.
+
+orderBy on a collection can be expressed using sortWith and sorted.
+
+```scala
+val fruit = List("apple", "pear", "orange", "pineapple") // List(apple, pear, orange, pineapple)
+fruit.sortWith(_.length < _.length)  //List[String] = List(pear, apple, orange, pineapple)
+fruit.sorted // List[String] = List(apple, orange, pear, pineapple)
+```
+
+groupBy is available on Scala collections. It partitions a collection into a
+map of collections according to a discriminator function f.
+
+```scala
+fruit.groupBy(_.head)// Map[Char, List[String]] = HashMap(a -> List(apple), p -> List(pear, pineapple), o -> List(orange))
+```
+
+#### Default Values
+So far, maps were partial functions: Applying a map to a key value in `map(key)` could lead to an exception, if the key was not stored in the map. There is an operation `withDefaultValue` that turns a map into a total function:
+
+```scala
+val cap1 = capitalOfCountry.withDefaultValue("<unknown>")
+cap1("Andorra") 
+```
+
+#### Example: Polynom
+
+A polynomial can be seen as a map from exponents to coefficients.
+For instance, $x^3 − 2x + 5$ can be represented with the map.
+
+```scala
+Map(0 -> 5, 1 -> -2, 3 -> 1)
+```
+Based on this observation, let’s design a class `Polynom` that represents polynomials as maps.
+
+
+It’s quite inconvenient to have to write
+
+```scala
+Polynom(Map(1 -> 2.0, 3 -> 4.0, 5 -> 6.2))
+```
+
+Can one do without the `Map`?
+
+Problem: The number of key -> value pairs passed to Map can vary.
+We can accommodate this pattern using a repeated parameter:
+
+```scala
+def Polynom(bindings: (Int, Double)*) =
+  Polynom(bindings.toMap.withDefaultValue(0))
+Polynom(1 -> 2.0, 3 -> 4.0, 5 -> 6.2)
+```
+
+Inside the Polynom function, `bindings` is seen as a `Seq[(Int, Double)]`.
+
+The final implementation of Polynom is as follows:
+
+```scala
+class Polynom(nonZeroTerms: Map[Int, Double]):
+  def this(bindings: (Int, Double)*) = this(bindings.toMap)
+  
+  def terms = nonZeroTerms.withDefaultValue(0.0)
+
+  def + (other: Polynom) =
+    Polynom(terms ++ other.terms.map((exp, coeff) => (exp, terms(exp) + coeff)))
+
+  override def toString =
+    val termStrings =
+    for (exp, coeff) <- terms.toList.sorted.reverse
+    yield
+      val exponent = if exp == 0 then "" else s"x^$exp"
+      s"$coeff$exponent"
+    if terms.isEmpty then "0" else termStrings.mkString(" + ")
+```
+
+```scala
+Polynom(1 -> 2.0, 3 -> 4.0, 5 -> 6.2) //  Polynom = 6.2x^5 + 4.0x^3 + 2.0x^1
+```
+#### Exercise II
+The `+` operation on `Polynom` used map concatenation with `++`. Design another version of `+` in terms of `foldLeft`:
+
+```scala
+def + (other: Polynom) =
+  Polynom(other.terms.foldLeft(terms)(addTerm))
+
+def addTerm(terms: Map[Int, Double], term: (Int, Double)) =
+  val (exp, coeff) = term
+  terms + (exp, coeff + terms(exp))
+```
+Which of the two versions do you believe is more efficient?
+
+[ ] The version using ++
+[ ] The version using foldLeft
 
 ### Putting the Pieces Together
