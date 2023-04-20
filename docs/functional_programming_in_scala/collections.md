@@ -1,5 +1,31 @@
 # Collections
 
+- [Sequence Collections](#sequence-collections)
+  - [Vector](#vector)
+  - [Seq](#seq)
+  - [Arrays and Strings](#arrays-and-strings)
+  - [Ranges](#ranges)
+- [Sequence Operations](#sequence-operations)
+  - [Example: Combinations](#example-combinations)
+  - [Example: Scalar Product](#example-scalar-product)
+  - [Exercise I](#exercise-i)
+- [Combinatorial Search and For Expressions](#combinatorial-search-and-for-expressions)
+  - [High Order Functions](#high-order-functions)
+  - [For Expression](#for-expression)
+    - [Syntax](#syntax)
+    - [Examples](#examples)
+  - [Sets](#sets)
+    - [Example](#example)
+  - [Maps](#maps)
+    - [Querying Map](#querying-map)
+    - [Updating Maps](#updating-maps)
+    - [Sorted and GroupBy](#sorted-and-groupby)
+    - [Default Values](#default-values)
+    - [Example: Polynom](#example-polynom)
+    - [Exercise II](#exercise-ii)
+  - [Putting the Pieces Together](#putting-the-pieces-together)
+    - [Background](#background)
+    - [Benefits](#benefits)
 
 ## Sequence Collections
 
@@ -141,7 +167,7 @@ This can be achieved by combining until and map:
 ```
 
 
-The previous step gave a sequence of sequences, let’s call it `xss`. We can combine all the sub-sequences using `foldRight` with `++`:
+The previous step gave a sequence of sequences, let's call it `xss`. We can combine all the sub-sequences using `foldRight` with `++`:
 
 ```scala
 xss.foldRight(Seq[Int]())(_ ++ _)
@@ -172,11 +198,11 @@ By reassembling the pieces, we obtain the following expression:
 .filter((x, y) => isPrime(x + y))
 
 ```
-This works, but makes most people’s head hurt. Is there a simpler way?
+This works, but makes most people's head hurt. Is there a simpler way?
 
 ### For Expression
 
-Higher-order functions such as `map`, `flatMap` or `filter` provide powerful constructs for manipulating lists. But sometimes the level of abstraction required by these function make the program difficult to understand. In this case, Scala’s `for` expression notation can help.
+Higher-order functions such as `map`, `flatMap` or `filter` provide powerful constructs for manipulating lists. But sometimes the level of abstraction required by these function make the program difficult to understand. In this case, Scala's `for` expression notation can help.
 
 Let `persons` be a list of elements of class`Person`, with fields name and age. 
 
@@ -267,13 +293,13 @@ The principal differences between sets and sequences are:
 
 #### Example
 
-The eight queens problem is to place eight queens on a chessboard so that no queen is threatened by another. In other words, there can’t be two queens in the same row, column, or diagonal.
+The eight queens problem is to place eight queens on a chessboard so that no queen is threatened by another. In other words, there can't be two queens in the same row, column, or diagonal.
 
 <tbody><tr style="vertical-align:middle"><td style="vertical-align:inherit;padding:0"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="vertical-align:inherit;padding:0"></td></tr><tr style="vertical-align:middle"><td style="padding:0;vertical-align:inherit;text-align:center;width:18px;height22px"></td><td colspan="8" rowspan="8" style="padding:0;vertical-align:inherit"><div class="chess-board" style="position:relative"><img alt="Chessboard480.svg" src="//upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Chessboard480.svg/176px-Chessboard480.svg.png" decoding="async" width="176" height="176" class="notpageimage" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Chessboard480.svg/264px-Chessboard480.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Chessboard480.svg/352px-Chessboard480.svg.png 2x" data-file-width="480" data-file-height="480"><div style="position:absolute;z-index:3;top:0px;left:66px;width:22px;height:22px"><img alt="d8 white queen" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/22px-Chess_qlt45.svg.png" decoding="async" title="d8 white queen" width="22" height="22" style="vertical-align: top" class="notpageimage" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/33px-Chess_qlt45.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/44px-Chess_qlt45.svg.png 2x" data-file-width="45" data-file-height="45"></div><div style="position:absolute;z-index:3;top:22px;left:132px;width:22px;height:22px"><img alt="g7 white queen" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/22px-Chess_qlt45.svg.png" decoding="async" title="g7 white queen" width="22" height="22" style="vertical-align: top" class="notpageimage" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/33px-Chess_qlt45.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/44px-Chess_qlt45.svg.png 2x" data-file-width="45" data-file-height="45"></div><div style="position:absolute;z-index:3;top:44px;left:44px;width:22px;height:22px"><img alt="c6 white queen" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/22px-Chess_qlt45.svg.png" decoding="async" title="c6 white queen" width="22" height="22" style="vertical-align: top" class="notpageimage" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/33px-Chess_qlt45.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/44px-Chess_qlt45.svg.png 2x" data-file-width="45" data-file-height="45"></div><div style="position:absolute;z-index:3;top:66px;left:154px;width:22px;height:22px"><img alt="h5 white queen" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/22px-Chess_qlt45.svg.png" decoding="async" title="h5 white queen" width="22" height="22" style="vertical-align: top" class="notpageimage" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/33px-Chess_qlt45.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/44px-Chess_qlt45.svg.png 2x" data-file-width="45" data-file-height="45"></div><div style="position:absolute;z-index:3;top:88px;left:22px;width:22px;height:22px"><img alt="b4 white queen" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/22px-Chess_qlt45.svg.png" decoding="async" title="b4 white queen" width="22" height="22" style="vertical-align: top" class="notpageimage" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/33px-Chess_qlt45.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/44px-Chess_qlt45.svg.png 2x" data-file-width="45" data-file-height="45"></div><div style="position:absolute;z-index:3;top:110px;left:88px;width:22px;height:22px"><img alt="e3 white queen" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/22px-Chess_qlt45.svg.png" decoding="async" title="e3 white queen" width="22" height="22" style="vertical-align: top" class="notpageimage" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/33px-Chess_qlt45.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/44px-Chess_qlt45.svg.png 2x" data-file-width="45" data-file-height="45"></div><div style="position:absolute;z-index:3;top:132px;left:0px;width:22px;height:22px"><img alt="a2 white queen" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/22px-Chess_qlt45.svg.png" decoding="async" title="a2 white queen" width="22" height="22" style="vertical-align: top" class="notpageimage" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/33px-Chess_qlt45.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/44px-Chess_qlt45.svg.png 2x" data-file-width="45" data-file-height="45"></div><div style="position:absolute;z-index:3;top:154px;left:110px;width:22px;height:22px"><img alt="f1 white queen" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/22px-Chess_qlt45.svg.png" decoding="async" title="f1 white queen" width="22" height="22" style="vertical-align: top" class="notpageimage" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/33px-Chess_qlt45.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/44px-Chess_qlt45.svg.png 2x" data-file-width="45" data-file-height="45"></div></div></td><td style="padding:0;vertical-align:inherit;text-align:center;width:18px;height22px"></td></tr><tr style="vertical-align:middle"><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td></tr><tr style="vertical-align:middle"><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td></tr><tr style="vertical-align:middle"><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td></tr><tr style="vertical-align:middle"><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td></tr><tr style="vertical-align:middle"><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td></tr><tr style="vertical-align:middle"><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td></tr><tr style="vertical-align:middle"><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height22px"></td></tr><tr style="vertical-align:middle"><td style="vertical-align:inherit;padding:0"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="padding:0;vertical-align:inherit;text-align:center;height:18px;width22px"></td><td style="vertical-align:inherit;padding:0"></td></tr></tbody>
 
 
 We now develop a solution for a chessboard of any size, not just 8. One way to solve the problem is to place a queen on each row.
-Once we have placed `k - 1` queens, one must place the `kth` queen in a column where it’s not "in check" with any other queen on the board.
+Once we have placed `k - 1` queens, one must place the `kth` queen in a column where it's not "in check" with any other queen on the board.
 
 We can solve this problem with a recursive algorithm:
 - Suppose that we have already generated all the solutions consisting of placing `k-1` queens on a board of size `n`.
@@ -396,10 +422,10 @@ For instance, $x^3 − 2x + 5$ can be represented with the map.
 ```scala
 Map(0 -> 5, 1 -> -2, 3 -> 1)
 ```
-Based on this observation, let’s design a class `Polynom` that represents polynomials as maps.
+Based on this observation, let's design a class `Polynom` that represents polynomials as maps.
 
 
-It’s quite inconvenient to have to write
+It's quite inconvenient to have to write
 
 ```scala
 Polynom(Map(1 -> 2.0, 3 -> 4.0, 5 -> 6.2))
@@ -458,3 +484,86 @@ Which of the two versions do you believe is more efficient?
 [ ] The version using foldLeft
 
 ### Putting the Pieces Together
+
+Once upon a time, before smartphones, phone keys had mnemonics
+assigned to them.
+
+```scala
+val mnemonics = Map(
+'2' -> "ABC", '3' -> "DEF", '4' -> "GHI", '5' -> "JKL",
+'6' -> "MNO", '7' -> "PQRS", '8' -> "TUV", '9' -> "WXYZ")
+```
+
+Assume you are given a dictionary words as a list of words. Design a method encode such that
+encode(phoneNumber) produces all phrases of words that can serve as mnemonics for the phone number.
+
+
+The phone number "7225247386" should have the mnemonic `Scala is fun` as one element of the set of solution phrases.
+
+
+```scala
+
+class Coder(words: List[String]):
+  val mnemonics = Map(
+    '2' -> "ABC", '3' -> "DEF", '4' -> "GHI", '5' -> "JKL",
+    '6' -> "MNO", '7' -> "PQRS", '8' -> "TUV", '9' -> "WXYZ")
+
+  /** Maps a letter to the digit it represents */
+  private val charCode: Map[Char, Char] =
+    for
+      (digit, str) <- mnemonics
+      ltr <- str
+    yield ltr -> digit
+
+  /** Maps a word to the digit string it can represent */
+  private def wordCode(word: String): String =
+    word.toUpperCase.map(charCode)
+
+  /** Maps a digit string to all words in the dictionary that represent it */
+  private val wordsForNum: Map[String, List[String]] = 
+    words.groupBy(wordCode).withDefaultValue(Nil)
+
+  /** All ways to encode a number as a list of words */
+  def encode(number: String): Set[List[String]] = 
+    if number.isEmpty then Set(Nil)
+    else
+        for
+            splitPoint <- (1 to number.length).toSet
+            word <- wordsForNum(number.take(splitPoint))
+            rest <- encode(number.drop(splitPoint))
+        yield word :: rest
+
+
+val word = "Scala is fun"
+// word: String = Scala is fun
+word.toUpperCase
+// res0: String = SCALA IS FUN
+
+val number = "7225276257"
+// number: String = 7225276257
+
+val coder = Coder(List("Scala", "Python", "Ruby", "C", "rocks", "socks", "sucks", "works", "pack"))
+// coder: Coder = repl.MdocSession$MdocApp$Coder@60976251
+
+coder.encode(number).map(_.mkString(" "))
+// res1: Set[String] = HashSet(Scala rocks, pack C rocks, pack C socks, Scala socks)
+
+```
+
+#### Background
+This example was taken from "An Empirical Comparison of Seven Programming Languages. IEEE Computer 33(10): 23-29 (2000)" by Lutz Prechelt. It is tested with Tcl, Python, Perl, Rexx, Java, C++, C. The code size medians:
+- 100 loc for scripting languages
+- 200-300 loc for the others
+
+
+#### Benefits
+
+Scala’s immutable collections are:
+
+- easy to use: few steps to do the job.
+- concise: one word replaces a whole loop.
+- safe: type checker is really good at catching errors.
+- fast: collection ops are tuned, can be parallelized.
+- universal: one vocabulary to work on all kinds of collections.
+- 
+This makes them an attractive tool for software development
