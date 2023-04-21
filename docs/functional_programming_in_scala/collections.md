@@ -313,7 +313,7 @@ We can solve this problem with a recursive algorithm:
 
 ### Maps
 
-Another fundamental collection type is the map. A map of type Map[Key, Value] is a data structure that associates keys of type Key with values of type Value. 
+Another fundamental collection type is the map. A map of type `Map[Key, Value]` is a data structure that associates keys of type Key with values of type Value. 
 
 ```scala
 val romanNumerals = Map("I" -> 1, "V" -> 5, "X" -> 10)
@@ -327,27 +327,28 @@ val countryOfCapital = capitalOfCountry.map((x, y) => (y, x)) // Map("Washington
 ```
 Note that maps extend iterables of key/value pairs. In fact, the syntax `key -> value` is just an alternative way to write the pair `(key, value)`. `->` implemented as an extension method in `Predef`.
 
-Class `Map[Key, Value]` also extends the function type Key => Value, so maps can be used everywhere functions can. In particular, maps can be applied to key arguments: 
+Class `Map[Key, Value]` also extends the function type `Key => Value`, so maps can be used everywhere functions can. In particular, maps can be applied to key arguments: 
 
 ```scala
-capitalOfCountry("US") // "Washington"
+capitalOfCountry("US") // String: Washingto
 ```
 Applying a map to a non-existing key gives an error:
+
 ```scala
 capitalOfCountry("Andorra") // java.util.NoSuchElementException: key not found: Andorra
 ```
 
-#### Querying Map
 
-To query a map without knowing beforehand whether it contains a given key, you can use the get operation:
+
+#### Querying Maps
+
+To query a map without knowing beforehand whether it contains a given key, you can use the `get` operation:
 
 ```scala
 capitalOfCountry.get("US") // Some("Washington")
 capitalOfCountry.get("Andorra") // None
 ```
-The result of a get operation is an `Option` value.
-
-The `Option` type is defined as:
+The result of a get operation is an `Option` value. The `Option` type is defined as:
 
 ```scala
 trait Option[+A]
@@ -359,14 +360,14 @@ object None extends Option[Nothing]
 The expression `map.get(key)` returns
 
 - `None` if map does not contain the given `key`,
-- `Some(x)` if map associates the given key with the value `x`.
+- `Some(x)` if map associates the given `key` with the value `x`.
 
 Since options are defined as case classes, they can be decomposed using pattern matching:
 
 ```scala
 def showCapital(country: String) = capitalOfCountry.get(country) match
-case Some(capital) => capital
-case None => "missing data"
+  case Some(capital) => capital
+  case None => "missing data"
 showCapital("US") // "Washington"
 showCapital("Andorra") // "missing data"
 ```
@@ -379,7 +380,7 @@ Functional updates of a `map` are done with the `+` and `++` operations:
 
 - `m + (k -> v)` The map that takes key `k` to value `v` and is otherwise equal to `m`
 - `m ++ kvs` The map `m` updated via `+` with all key/value pairs in `kvs`
-- 
+
 These operations are purely functional. For instance,
 
 ```scala
@@ -389,9 +390,7 @@ val m2 = m1 + ("blue" -> 3) // Map(red -> 1, blue -> 3)
 
 #### Sorted and GroupBy
 
-Two useful operations known from SQL queries are groupBy and orderBy.
-
-orderBy on a collection can be expressed using sortWith and sorted.
+Two useful operations known from SQL queries are `groupBy` and `orderBy`. `orderBy` on a collection can be expressed using `sortWith` and `sorted`.
 
 ```scala
 val fruit = List("apple", "pear", "orange", "pineapple") // List(apple, pear, orange, pineapple)
@@ -399,8 +398,7 @@ fruit.sortWith(_.length < _.length)  //List[String] = List(pear, apple, orange, 
 fruit.sorted // List[String] = List(apple, orange, pear, pineapple)
 ```
 
-groupBy is available on Scala collections. It partitions a collection into a
-map of collections according to a discriminator function f.
+`groupBy` is available on Scala collections. It partitions a collection into a map of collections according to a *discriminator function f*.
 
 ```scala
 fruit.groupBy(_.head)// Map[Char, List[String]] = HashMap(a -> List(apple), p -> List(pear, pineapple), o -> List(orange))
@@ -416,14 +414,12 @@ cap1("Andorra")
 
 #### Example: Polynom
 
-A polynomial can be seen as a map from exponents to coefficients.
-For instance, $x^3 − 2x + 5$ can be represented with the map.
+A polynomial can be seen as a map from exponents to coefficients. For instance, $x^3 − 2x + 5$ can be represented with the map.
 
 ```scala
 Map(0 -> 5, 1 -> -2, 3 -> 1)
 ```
 Based on this observation, let's design a class `Polynom` that represents polynomials as maps.
-
 
 It's quite inconvenient to have to write
 
@@ -431,10 +427,7 @@ It's quite inconvenient to have to write
 Polynom(Map(1 -> 2.0, 3 -> 4.0, 5 -> 6.2))
 ```
 
-Can one do without the `Map`?
-
-Problem: The number of key -> value pairs passed to Map can vary.
-We can accommodate this pattern using a repeated parameter:
+Can one do without the `Map`? The problem is the number of `key -> value` pairs passed to `Map` can vary. We can accommodate this pattern using a repeated parameter:
 
 ```scala
 def Polynom(bindings: (Int, Double)*) =
@@ -481,7 +474,7 @@ def addTerm(terms: Map[Int, Double], term: (Int, Double)) =
 Which of the two versions do you believe is more efficient?
 
 [ ] The version using ++
-[ ] The version using foldLeft
+[x] The version using foldLeft
 
 ### Putting the Pieces Together
 
