@@ -1,3 +1,4 @@
+// divide and conquer
 class Coder(words: List[String]):
   val mnemonics = Map(
     '2' -> "ABC", '3' -> "DEF", '4' -> "GHI", '5' -> "JKL",
